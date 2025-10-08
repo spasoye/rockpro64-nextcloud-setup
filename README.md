@@ -68,3 +68,34 @@ This allows direct access to the system’s UART console, which is essential for
 During the setup process, having serial access proved invaluable, especially when configuring Armbian for the first time and verifying that the system booted correctly from the chosen storage medium (microSD or eMMC). It also provides a simple way to view kernel logs and manage the board before any network configuration is complete.
 
 Although Pine64 has an active community, it doesn’t match the scale of the Raspberry Pi ecosystem. Still, considering its performance-to-price ratio and hardware capabilities, the ROCKPro64 stands out as an excellent alternative for developers seeking more power and flexibility in their self-hosted setups.
+
+### Power supply
+
+I used old ATX power supply thats been lying on shelf waiting to be used again. 
+It has plenty of SATA power connectors to power drives and 500 watts of power
+which is more than enough to run ROCKPro64, while offering to use it to power 
+more devices along the NAS.
+
+<br>
+<div align="center">
+    <img src="/pics/IMG_20251008_153928.jpg" width="60%" >
+</div>
+<br>
+
+In order to activate ATX PSU you need to connect green wire to ground wire on 
+main power connector.
+
+<br>
+<div align="center">
+    <img src="/pics/IMG_20251008_161502.jpg" width="40%" >
+</div>
+<br>
+
+ROCKPro64 needs 12V to power and is equiped with barrel plug so I repurposed 
+one CPU power connector and crimped it with barrel jack.
+
+<br>
+<div align="center">
+    <img src="/pics/IMG_2025100_barrel_jack.jpg" width="40%" >
+</div>
+<br>
