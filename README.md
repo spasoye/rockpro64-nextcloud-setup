@@ -69,21 +69,16 @@ During the setup process, having serial access proved invaluable, especially whe
 
 Although Pine64 has an active community, it doesn’t match the scale of the Raspberry Pi ecosystem. Still, considering its performance-to-price ratio and hardware capabilities, the ROCKPro64 stands out as an excellent alternative for developers seeking more power and flexibility in their self-hosted setups.
 
-### Power supply
+### Power Supply
 
-I used old ATX power supply thats been lying on shelf waiting to be used again. 
-It has plenty of SATA power connectors to power drives and 500 watts of power
-which is more than enough to run ROCKPro64, while offering to use it to power 
-more devices along the NAS.
-
+For the power supply, I decided to reuse an old ATX PSU that’s been sitting on a shelf for years, waiting for a second life. It’s a 500W unit, which is complete overkill for the ROCKPro64, but it has plenty of SATA connectors — perfect for powering multiple drives in my setup. Plus, it’s reliable and already tested, so why not put it back to work?
 <br>
 <div align="center">
     <img src="/pics/IMG_20251008_153928.jpg" width="60%" >
 </div>
 <br>
 
-In order to activate ATX PSU you need to connect green wire to ground wire on 
-main power connector.
+To get an ATX PSU to power on without a motherboard, you need to short the green wire (PS_ON) to any ground wire (black) on the main 24-pin connector. A simple jumper wire does the trick.
 
 <br>
 <div align="center">
@@ -91,11 +86,52 @@ main power connector.
 </div>
 <br>
 
-ROCKPro64 needs 12V to power and is equiped with barrel plug so I repurposed 
-one CPU power connector and crimped it with barrel jack.
+Since the ROCKPro64 runs on 12V DC through a barrel jack, I repurposed one of the CPU power connectors from the PSU.
+After checking the pinout a few times (just to be safe!), I crimped it to a barrel jack connector — and it worked perfectly.
+Now the board powers directly from the ATX supply, keeping everything neat and powered from a single source.
 
 <br>
 <div align="center">
     <img src="/pics/IMG_2025100_barrel_jack.jpg" width="40%" >
 </div>
 <br>
+
+### 💽 Disks and Assembly
+
+For storage, I wanted to take full advantage of the four SATA ports on the PCIe expansion board.
+I connected three HDDs and one SSD, mixing parts I already had lying around. The plan was to have a clean split between data, backups, and container storage:
+
+- 🟥 2× WD Red 1TB HDDs — main data storage
+- 🟩 1× WD Green 3TB HDD — dedicated to Borg backups (more on this later)
+- 🟥 1× WD Red SSD — for containers and system stuff
+
+<br> <div align="center"> <img src="/pics/IMG_20251005_161620.jpg" width="60%"> </div> <br>
+
+I used disk mounting bracket i salvaged from an old PC to securely fix disk. I also screwed on plexiglass panel with to use it as holder for ROCKpro.
+
+<br>
+<p align="center">
+    <img src="/pics/bracket_with_rockpro_front.jpg " width="37.5%" >
+    <img src="/pics/IMG_20251009_141147.jpg " width="50%" >
+</p>
+<br>
+
+Every component is mounted on an aluminium sheet that serves as a sturdy base and helps with heat dissipation.
+It also keeps the build modular — I can easily detach or rearrange parts if I decide to upgrade or rewire anything later.
+
+<br>
+<p align="center">
+    <img src="/pics/IMG_20251009_141155.jpg" width="40%" >
+    <img src="/pics/back_side.jpg" width="40%" >
+</p>
+<p align="center">
+    <img src="/pics/nas_assembled.jpg" width="40%" >
+</p>
+<p align="center">
+<img src="/pics/nas_in_action.jpg" width="60%" >
+</p>
+<br>
+
+In the end it’s a bit of a Frankenstein build — old drives, reused PSU, random cables - but that’s part of the fun.
+The goal wasn’t to build a shiny commercial NAS, but something modular, hackable, and entirely mine.
+
