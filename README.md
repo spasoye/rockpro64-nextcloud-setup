@@ -96,7 +96,7 @@ Now the board powers directly from the ATX supply, keeping everything neat and p
 </div>
 <br>
 
-### 💽 Disks and Assembly
+### Disks and Assembly
 
 For storage, I wanted to take full advantage of the four SATA ports on the PCIe expansion board.
 I connected three HDDs and one SSD, mixing parts I already had lying around. The plan was to have a clean split between data, backups, and container storage:
@@ -107,7 +107,7 @@ I connected three HDDs and one SSD, mixing parts I already had lying around. The
 
 <br> <div align="center"> <img src="/pics/IMG_20251005_161620.jpg" width="60%"> </div> <br>
 
-I used disk mounting bracket i salvaged from an old PC to securely fix disk. I also screwed on plexiglass panel with to use it as holder for ROCKpro.
+I used disk mounting bracket i salvaged from an old PC to securely fix disk. I also screwed on plexiglass panel to use it as holder for ROCKpro.
 
 <br>
 <p align="center">
@@ -134,4 +134,16 @@ It also keeps the build modular — I can easily detach or rearrange parts if I 
 
 In the end it’s a bit of a Frankenstein build — old drives, reused PSU, random cables - but that’s part of the fun.
 The goal wasn’t to build a shiny commercial NAS, but something modular, hackable, and entirely mine.
+
+## Software setup
+
+For the operating system, I went with Armbian, which is a lightweight Debian-based distro optimized for ARM boards like the ROCKPro64.
+I started by downloading the latest Armbian CLI image (no desktop environment) from the [official site](https://www.armbian.com/rockpro64/). 
+
+Since this system will run headless 24/7, there’s no need for a GUI, so I downloaded a minimal Armbian image.
+Once the image was ready, I flashed it to a microSD card using **balenaEtcher**, though you can use any tool like **dd** or even **Raspberry Pi Imager**.
+
+After the first boot, I connected via the serial console to monitor startup logs and complete the initial setup — setting up my user, hostname, SSH server.
+For those not skillfull enough, me included, Armbian has a equivalent of Raspberry's **raspi-config** originaly named **armbian-config** that lets you 
+configure your setting in a more intuitive way through **ncurses** based **TUI**.
 
