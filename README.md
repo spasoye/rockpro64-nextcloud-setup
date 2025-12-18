@@ -42,7 +42,7 @@ I opted for the 4 GB RAM version to provide better performance and to accommodat
 
 <br>
 <div align="center">
-    <img src="/pics/IMG_20251006_165107.jpg" width="60%" >
+    <img src="pics/IMG_20251006_165107.jpg" width="60%" >
 </div>
 <br>
 
@@ -52,7 +52,7 @@ Adding active cooling helps maintain consistent performance, prevents thermal th
 
 <br>
 <div align="center">
-    <img src="/pics/IMG_20251006_165059.jpg" width="60%" >
+    <img src="pics/IMG_20251006_165059.jpg" width="60%" >
 </div>
 <br>
 
@@ -61,7 +61,7 @@ This allows direct access to the system’s UART console, which is essential for
 
 <br>
 <div align="center">
-    <img src="/pics/IMG_20251006_165230.jpg" width="60%" >
+    <img src="pics/IMG_20251006_165230.jpg" width="60%" >
 </div>
 <br>
 
@@ -74,7 +74,7 @@ Although Pine64 has an active community, it doesn’t match the scale of the Ras
 For the power supply, I decided to reuse an old ATX PSU that’s been sitting on a shelf for years, waiting for a second life. It’s a 500W unit, which is complete overkill for the ROCKPro64, but it has plenty of SATA connectors — perfect for powering multiple drives in my setup. Plus, it’s reliable and already tested, so why not put it back to work?
 <br>
 <div align="center">
-    <img src="/pics/IMG_20251008_153928.jpg" width="60%" >
+    <img src="pics/IMG_20251008_153928.jpg" width="60%" >
 </div>
 <br>
 
@@ -82,7 +82,7 @@ To get an ATX PSU to power on without a motherboard, you need to short the green
 
 <br>
 <div align="center">
-    <img src="/pics/IMG_20251008_161502.jpg" width="40%" >
+    <img src="pics/IMG_20251008_161502.jpg" width="40%" >
 </div>
 <br>
 
@@ -92,7 +92,7 @@ Now the board powers directly from the ATX supply, keeping everything neat and p
 
 <br>
 <div align="center">
-    <img src="/pics/IMG_2025100_barrel_jack.jpg" width="40%" >
+    <img src="pics/IMG_2025100_barrel_jack.jpg" width="40%" >
 </div>
 <br>
 
@@ -104,14 +104,14 @@ For storage, I wanted to take full advantage of the four SATA ports on the PCIe 
 - 🟩 1× WD Green 3TB HDD — dedicated to Borg backups (more on this later)
 - 🟥 1× WD Red SSD — for containers and system stuff
 
-<br> <div align="center"> <img src="/pics/IMG_20251005_161620.jpg" width="60%"> </div> <br>
+<br> <div align="center"> <img src="pics/IMG_20251005_161620.jpg" width="60%"> </div> <br>
 
 I used disk mounting bracket i salvaged from an old PC to securely fix disk. I also screwed on plexiglass panel to use it as holder for ROCKpro.
 
 <br>
 <p align="center">
-    <img src="/pics/bracket_with_rockpro_front.jpg " width="37.5%" >
-    <img src="/pics/IMG_20251009_141147.jpg " width="50%" >
+    <img src="pics/bracket_with_rockpro_front.jpg " width="37.5%" >
+    <img src="pics/IMG_20251009_141147.jpg " width="50%" >
 </p>
 <br>
 
@@ -119,14 +119,14 @@ Every component is mounted on an aluminium sheet that serves as a sturdy base an
 
 <br>
 <p align="center">
-    <img src="/pics/IMG_20251009_141155.jpg" width="40%" >
-    <img src="/pics/back_side.jpg" width="40%" >
+    <img src="pics/IMG_20251009_141155.jpg" width="40%" >
+    <img src="pics/back_side.jpg" width="40%" >
 </p>
 <p align="center">
-    <img src="/pics/nas_assembled.jpg" width="40%" >
+    <img src="pics/nas_assembled.jpg" width="40%" >
 </p>
 <p align="center">
-<img src="/pics/nas_in_action.jpg" width="60%" >
+<img src="pics/nas_in_action.jpg" width="60%" >
 </p>
 <br>
 
@@ -481,3 +481,54 @@ Forward Hostname/IP: nextcloud-aio-apache (or 127.0.0.1 if using host network)
 Forward Port: 11000
 Websockets Support: ✓ Enabled (required for Nextcloud Talk)
 
+### Cloudflare Tunnel Setup
+
+To access Nextcloud securely from anywhere without opening ports on my router or dealing with dynamic DNS, I used Cloudflare Tunnel. This was especially important because my ISP uses CGNAT (Carrier-Grade NAT), which makes traditional port forwarding impossible. I spent my entire nerve balance negotiating with my ISP (hint: name starts with an *'A'* and ends with *'1'*) to install my own network equipment, which made me appreciate the elegance of Cloudflare Tunnel and provided a more elegant solution that doesn't rely on ISP cooperation. 
+
+#### How Cloudflare Tunnel Works
+
+Instead of exposing your server directly to the internet, Cloudflare Tunnel establishes an outbound connection from your server to Cloudflare's network. All incoming traffic is routed through Cloudflare's infrastructure, which acts as a secure gateway. This provides several key benefits:
+
+- No port forwarding required — Works behind any NAT, including CGNAT
+- DDoS protection — Cloudflare's network absorbs attacks before they reach your server
+- Free SSL certificates — Automatic HTTPS with Cloudflare's certificates
+- Hidden origin IP — Your home IP address is never exposed
+- Access control — Can add authentication layers through Cloudflare Zero Trust
+
+**Prerequisites**
+- A domain managed by Cloudflare (free plan works perfectly)
+- Cloudflare account
+- Domain DNS pointed to Cloudflare nameservers
+
+#### Installing cloudflared
+
+I used the cloudflared Docker image for all setup steps, including tunnel creation and authentication.Cloudflare has the step by step guide creating and configuring your Cloudflare tunnel daemon (using environment of your choice) through their *one.dash.cloudflare* web UI and after selecting Docker you will be presented by *docker run* command with your token you need to run:
+
+<br>
+<div align="center">
+    <img src="pics/one_dash_cloudflare.jpg" width="60%" >
+</div>
+<br>
+
+I created folder and docker compose file for that purpose:
+```bash
+mkdir cloudflared_tunnel && cd cludflared_tunnel
+vim docker-compose.yml
+
+# add this
+version: '3'
+
+services:
+  cloudflared:
+    image: cloudflare/cloudflared:latest
+    container_name: cloudflare-tunnel
+    restart: unless-stopped
+    command: tunnel run --token /####your_token#####/
+    network_mode: host
+
+# run it 
+docker compose up -d
+
+# Verify
+docker logs cloudflared-tunnel
+```
