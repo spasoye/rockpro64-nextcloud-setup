@@ -397,4 +397,87 @@ services:
       - APACHE_IP_BINDING=127.0.0.1  # Bind to localhost (Cloudflare Tunnel)
       - NEXTCLOUD_DATADIR=/mnt/raid1/nextcloud  # RAID1 array for data
 ```
+Important configurations:
+
+* NEXTCLOUD_DATADIR=/mnt/raid1/nextcloud — Points Nextcloud's data directory to the RAID1 array (2× 1TB WD Red drives). ⚠️ This must be set before initial installation and cannot be changed afterward without complications.
+* APACHE_PORT=11000 and APACHE_IP_BINDING=127.0.0.1 — Configured for use with Cloudflare Tunnel as a reverse proxy. The AIO container runs Apache internally on port 11000, accessible only from localhost.
+* /mnt/borgbackup:/mnt/wd_hdd — Mounts the 3TB WD Green HDD into the container, allowing AIO's built-in Borg backup to use it for automated backups.
+
+```bash
+cd ~/nextcloud_aio
+docker compose -f docker-compose-proxy.yaml up -d
+
+# Check logs
+docker logs -f nextcloud-aio-mastercontainer
+```
+
+Once the mastercontainer is running, access the AIO admin interface:
+
+```
+http://192.168.x.x:8080
+```
+On first access, AIO provides a randomly generated password. Copy and save it securely — you'll need it to access the interface.
+Through the AIO interface, I:
+
+1. Configured the domain name (cloud.yourdomain.com)
+2. Selected optional containers for your special use case
+3. Configured backup settings to use the mounted /mnt/wd_hdd directory
+4. Started the Nextcloud installation
+
+### Nginx Proxy Manager Setup
+
+While Nextcloud AIO includes Apache internally, I decided to add Nginx Proxy Manager as an additional reverse proxy layer in front of it. This provides several advantages: the ability to host multiple services on the same machine with proper routing through an easy-to-use web interface, additional caching and security headers, and future-proofing for when I want to add more self-hosted applications. Having Nginx Proxy Manager as a centralized entry point makes it easier to manage SSL/TLS settings, rate limiting, and access control in one place rather than configuring each service individually.
+
+Unlike traditional nginx configuration files, NPM provides a clean web interface for managing proxy hosts, SSL certificates, access lists, and more. It's perfect for homelab environments where you want professional features without the complexity of editing config files (if you don't want to).
+
+
+#### Setting up Nginx Proxy Manager
+
+Nginx comes packaged as an Docker image jc21/nginx-proxy-manager:latest available on Dockerhub so you should just run it as a Docker container:
+
+```bash
+mkdir -p ~/nginx-proxy-manager
+cd ~/nginx-proxy-manager
+vim docker-compose.yml
+```
+Docker Compose configuration:
+
+```yaml
+version: '3.8'
+
+services:
+  app:
+    image: 'jc21/nginx-proxy-manager:latest'
+    container_name: nginx-proxy-manager
+    restart: unless-stopped
+    ports:
+      - '80:80'      # HTTP
+      - '443:443'    # HTTPS
+      - '81:81'      # Admin interface
+    volumes:
+      - ./data:/data
+      - ./letsencrypt:/etc/letsencrypt
+    environment:
+      DB_SQLITE_FILE: "/data/database.sqlite"
+```
+Start the container:
+```bash
+docker compose up -d
+```
+
+Access the admin interface at http://192.168.x.x:81
+Default credentials:
+
+Email: admin@example.com
+Password: changeme
+
+Change these immediately after first login!
+Configuring Nextcloud Proxy Host:
+Through the NPM web interface, I created a new Proxy Host:
+
+Domain Names: cloud.yourdomain.com
+Scheme: http
+Forward Hostname/IP: nextcloud-aio-apache (or 127.0.0.1 if using host network)
+Forward Port: 11000
+Websockets Support: ✓ Enabled (required for Nextcloud Talk)
 
