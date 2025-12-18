@@ -110,8 +110,8 @@ I used disk mounting bracket i salvaged from an old PC to securely fix disk. I a
 
 <br>
 <p align="center">
-    <img src="pics/bracket_with_rockpro_front.jpg " width="37.5%" >
-    <img src="pics/IMG_20251009_141147.jpg " width="50%" >
+    <img src="pics/bracket_with_rockpro_front.jpg" width="37.5%" >
+    <img src="pics/IMG_20251009_141147.jpg" width="50%" >
 </p>
 <br>
 
